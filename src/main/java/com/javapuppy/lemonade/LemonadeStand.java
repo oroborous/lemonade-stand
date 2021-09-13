@@ -52,10 +52,10 @@ public class LemonadeStand {
             logger.log(specialEvent);
         }
 
-        showDecisionPage();
+        getPlayerDecisions();
     }
 
-    private void showDecisionPage() {
+    private void getPlayerDecisions() {
         for (int i = 0; i < players.length; i++) {
             Player player = players[i];
             player.openStand(streetCrewWorking, weather, costPerGlass);
