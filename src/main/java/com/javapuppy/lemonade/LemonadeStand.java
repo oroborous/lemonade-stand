@@ -1,194 +1,135 @@
 package com.javapuppy.lemonade;
 
+import com.javapuppy.lemonade.log.ConsoleLogger;
+import com.javapuppy.lemonade.log.CsvFileLogger;
+import com.javapuppy.lemonade.log.Logger;
+
 import java.util.Arrays;
 
 public class LemonadeStand {
     // all amounts are in pennies
-    static final int SIGN_COST = 15;
+    public static final int SIGN_COST = 15;
     final int STARTING_ASSETS = 200;
     final double P9 = 10;
     final double S2 = 30;
     final double C9 = 0.5;
     final double C2 = 1;
 
-    private int day = 0;
-    private Weather weather;
-    private double weatherFactor = 1.0;
-    private int costPerGlass;
-    private boolean stormBrewing, streetCrewWorking, streetCrewThirsty;
+    private int currentDay = 0;
+    private int maxDays = -1;
 
     private Player[] players;
 
-    private Logger logger = new ConsoleLogger();
+    // Runs faster when console output disabled
+    private boolean consoleEnabled = false;
+    private Logger clog = new ConsoleLogger();
+    private Logger flog = new CsvFileLogger();
 
-    public void open(int numPlayers) {
-        initGame(numPlayers);
-        while (anyPlayersSolvent()) {
-            startNewDay();
-        }
-    }
-
-    private boolean anyPlayersSolvent() {
-        return Arrays.stream(players).anyMatch(value -> value.getAssets() > 0);
-    }
-
-    private void startNewDay() {
-        day += 1;
-        makeWeather();
-        logger.log("Weather Report for Day " + day + ": " + weather.getDisplay());
-
-        if (day < 3) {
-            costPerGlass = 2;
-        } else if (day < 7) {
-            costPerGlass = 4;
-        } else {
-            costPerGlass = 5;
-        }
-
-        logger.log("On day " + day + ", the cost of lemonade is: " + costPerGlass);
-
-        String specialEvent = doRandomEvents();
-        if (!specialEvent.isBlank()) {
-            logger.log(specialEvent);
-        }
-
-        getPlayerDecisions();
-    }
-
-    private void getPlayerDecisions() {
-        for (int i = 0; i < players.length; i++) {
-            Player player = players[i];
-            player.openStand(streetCrewWorking, weather, costPerGlass);
-            SalesReport report = new SalesReport(i + 1, day,
-                    weather, costPerGlass, player);
-            calculateResults(player, report);
-        }
-    }
-
-    private void initGame(int numPlayers) {
-        this.day = 0;
-        this.weatherFactor = 1.0;
+    public LemonadeStand(int numPlayers, int maxDays) {
+        this.maxDays = maxDays;
         this.players = new Player[numPlayers];
+    }
 
-        for (int i = 0; i < numPlayers; i++) {
+    public void close() {
+        flog.close();
+    }
+
+    public void setConsoleEnabled(boolean enabled) {
+        this.consoleEnabled = enabled;
+    }
+
+    private void initPlayers() {
+        for (int i = 0; i < players.length; i++) {
             players[i] = new Player(STARTING_ASSETS);
         }
     }
 
-    private void calculateResults(Player player, SalesReport report) {
+    public void openForBusiness() {
+        currentDay = 0;
+        initPlayers();
+
+        do {
+            DailyConditions dailyConditions = startNewDay();
+
+            for (int i = 0; i < players.length; i++) {
+                Player player = players[i];
+                PlayerDecisions playerDecisions =
+                        player.getDecisions(dailyConditions.getPlayerInformation());
+
+                calculateResults(dailyConditions, player, playerDecisions);
+            }
+        } while (anyPlayersSolvent() && (currentDay < maxDays || maxDays == -1));
+    }
+
+    private boolean anyPlayersSolvent() {
+        return Arrays.stream(players).anyMatch(p -> p.assets > 0);
+    }
+
+    private DailyConditions startNewDay() {
+        currentDay += 1;
+        DailyConditions dailyConditions = new DailyConditions(currentDay);
+
+        if (consoleEnabled) {
+            clog.log("Weather Report for Day " + currentDay + ": " + dailyConditions.weather.getDisplay());
+            clog.log("On day " + currentDay + ", the cost of lemonade is: " + dailyConditions.costPerGlass);
+
+            if (dailyConditions.specialEventText != null) {
+                clog.log(dailyConditions.specialEventText);
+            }
+        }
+
+        return dailyConditions;
+    }
+
+
+    private void calculateResults(DailyConditions dailyConditions,
+                                  Player player,
+                                  PlayerDecisions playerDecisions) {
         // calculate how many glasses are sold
         String specialResult = null;
         double n1;
+        int ppg = playerDecisions.pricePerGlass;
+        int signs = playerDecisions.signsMade;
+        int glasses = playerDecisions.glassesMade;
 
-        if (player.getPricePerGlass() >= P9) {
-            n1 = Math.pow(P9, 2) * S2 / Math.pow(player.getPricePerGlass(), 2);
+        if (ppg >= P9) {
+            n1 = Math.pow(P9, 2) * S2 / Math.pow(ppg, 2);
         } else {
-            n1 = (P9 - player.getPricePerGlass()) / P9 * 0.8 * S2 + S2;
+            n1 = (P9 - ppg) / P9 * 0.8 * S2 + S2;
         }
 
-        double w = -player.getSignsMade() * C9;
+        double w = -signs * C9;
 
         // increase in sales due to ads
         double adBenefit = 1 - Math.exp(w) * C2;
-        double n2 = Math.floor(weatherFactor * n1 * (1 + adBenefit));
+        double n2 = Math.floor(dailyConditions.weatherFactor * n1 * (1 + adBenefit));
 
-        if (stormBrewing) {
-            report.weather = weather = Weather.STORM;
+        DailySalesReport report = new DailySalesReport(dailyConditions,
+                player, playerDecisions);
+
+        if (dailyConditions.stormBrewing) {
+            report.weather = dailyConditions.weather = Weather.STORM;
             n2 = 0;
-            if (player.getGlassesMade() > 0) {
-                specialResult = "All lemonade was ruined";
+            if (glasses > 0) {
+                report.specialResultText = "All lemonade was ruined";
             }
-        } else if (streetCrewThirsty) {
-            n2 = player.getGlassesMade();
-            specialResult = "The street crews bought all your lemonade at lunchtime!";
+        } else if (dailyConditions.streetCrewThirsty) {
+            n2 = glasses;
+            report.specialResultText = "The street crews bought all your lemonade at lunchtime!";
         }
 
-        report.glassesSold = (int) Math.min(n2, player.getGlassesMade());
-
-        // calculate income and expenses
-        report.lemonadeExpense = player.getGlassesMade() * costPerGlass;
-        report.adExpense = player.getSignsMade() * SIGN_COST;
-        report.salesIncome = report.glassesSold * player.getPricePerGlass();
-        report.profit = report.salesIncome - report.lemonadeExpense - report.adExpense;
+        int glassesSold = (int) Math.min(n2, glasses);
+        report.calculateProfit(glassesSold);
 
         // adjust assets
-        player.addProfit(report.profit);
+        player.adjustAssets(report.profit, report.day);
 
-        report.newAssets = player.getAssets();
-
-        logger.log(report);
-
-        if (specialResult != null) {
-            logger.log(specialResult);
+        if (dailyConditions.dayNum == 30 || player.assets <= 0) {
+        flog.log(report);
         }
-
-        logger.log("Day " + day);
-        logger.log("Stand " + report.standNum);
-        logger.log(report.glassesSold + " Glasses Sold");
-        logger.log("Price per glass: " + report.pricePerGlass);
-        logger.log("Sales income: " + report.salesIncome);
-        logger.log(report.glassesMade + " Glasses Made");
-        logger.log("Cost per glass: " + costPerGlass);
-        logger.log("Lemonade expense: " + report.lemonadeExpense);
-        logger.log(report.signsMade + " Signs Made");
-        logger.log("Cost per sign: " + SIGN_COST);
-        logger.log("Ad expense: " + report.adExpense);
-        logger.log("Profit: " + report.profit);
-        logger.log("New assets: " + report.newAssets);
-    }
-
-    private void makeWeather() {
-        double r = Math.random();
-        if (r < 0.6) {
-            weather = Weather.SUNNY;
-        } else if (r < 0.8) {
-            weather = Weather.CLOUDY;
-        } else {
-            if (day < 3) {
-                weather = Weather.SUNNY;
-            } else {
-                weather = Weather.HOT;
-            }
-        }
-
-        double chanceOfRain = 0;
-        if (weather == Weather.CLOUDY) {
-            chanceOfRain = 30 + Math.floor(Math.random() * 5) * 10;
-            weatherFactor = 1.0 - chanceOfRain / 100;
-        } else if (weather == Weather.HOT) {
-            weatherFactor = 2.0;
-        } else {
-            weatherFactor = 1.0;
-        }
+        if (consoleEnabled)
+            clog.log(report);
     }
 
 
-
-    private String doRandomEvents() {
-        String specialDesc = "";
-
-        streetCrewWorking = streetCrewThirsty = false;
-        stormBrewing = false;
-
-        if (weather == Weather.CLOUDY) {
-            if (Math.random() < 0.25) {
-                stormBrewing = true;
-            }
-        } else if (weather == Weather.HOT) {
-            // heat wave already handled in makeWeather()
-        } else {
-            if (Math.random() >= 0.25) {
-                return "";
-            }
-            specialDesc = "The street department is working today. There will be no traffic on your street.";
-            streetCrewWorking = true;
-            if (Math.random() < 0.5) {
-                streetCrewThirsty = true;
-            } else {
-                weatherFactor = 1.0;
-            }
-        }
-
-        return specialDesc;
-    }
 }

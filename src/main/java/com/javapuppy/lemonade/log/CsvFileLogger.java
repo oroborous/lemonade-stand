@@ -1,15 +1,27 @@
-package com.javapuppy.lemonade;
+package com.javapuppy.lemonade.log;
 
+import com.javapuppy.lemonade.DailySalesReport;
+import com.javapuppy.lemonade.LemonadeStand;
+
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-public class ConsoleLogger implements Logger {
+public class CsvFileLogger implements Logger {
+    @Override
+    public void log(String text) {
+        try {
+            writer.write(text);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     private FileWriter writer;
 
-    public ConsoleLogger() {
+    public CsvFileLogger() {
         try {
-            this.writer = new FileWriter("lemonade.csv");
+            this.writer = new FileWriter(File.createTempFile("lemonade-", ".csv", new File(".")));
             StringBuilder sb = new StringBuilder();
             sb.append("Day").append(",");
             sb.append("Weather").append(",");
@@ -32,11 +44,11 @@ public class ConsoleLogger implements Logger {
         }
     }
 
-    public void log(SalesReport report) {
+    public void log(DailySalesReport report) {
         StringBuilder sb = new StringBuilder();
         sb.append(report.day).append(",");
         sb.append(report.weather.getDisplay()).append(",");
-        sb.append(report.standNum).append(",");
+        sb.append(report.playerNum).append(",");
         sb.append(report.startingAssets).append(",");
         sb.append(report.glassesSold).append(",");
         sb.append(report.pricePerGlass).append(",");
@@ -48,7 +60,7 @@ public class ConsoleLogger implements Logger {
         sb.append(LemonadeStand.SIGN_COST).append(",");
         sb.append(report.adExpense).append(",");
         sb.append(report.profit).append(",");
-        sb.append(report.newAssets).append("\n");
+        sb.append(report.endingAssets).append("\n");
 
         try {
             writer.write(sb.toString());
@@ -58,7 +70,11 @@ public class ConsoleLogger implements Logger {
     }
 
     @Override
-    public void log(String text) {
-        System.out.println(text);
+    public void close() {
+        try {
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
