@@ -8,29 +8,29 @@ public class LemonadeStandStrategy {
     // Within that portion, weather in order of SUNNY, HOT, CLOUDY
 
     public double[][] strategy = {
-            {0.75, 1.0}, // crew working, cost 2, SUNNY
-            {0.75, 1.0}, // crew working, cost 2, HOT
-            {0.35, 0.5}, // crew working, cost 2, CLOUDY
-            {0.75, 1.0}, // crew working, cost 4, SUNNY
-            {0.75, 1.0}, // crew working, cost 4, HOT
-            {0.35, 0.5}, // crew working, cost 4, CLOUDY
-            {0.75, 1.0}, // crew working, cost 5, SUNNY
-            {0.75, 1.0}, // crew working, cost 5, HOT
-            {0.35, 0.5}, // crew working, cost 5, CLOUDY
-            {0.95, 0.75}, // crew NOT working, cost 2, SUNNY
-            {0.95, 0.75}, // crew NOT working, cost 2, HOT
-            {0.35, 0.5}, // crew NOT working, cost 2, CLOUDY
-            {0.95, 0.75}, // crew NOT working, cost 4, SUNNY
-            {0.95, 0.75}, // crew NOT working, cost 4, HOT
-            {0.35, 0.5}, // crew NOT working, cost 4, CLOUDY
-            {0.95, 0.75}, // crew NOT working, cost 5, SUNNY
-            {0.95, 0.75}, // crew NOT working, cost 5, HOT
-            {0.35, 0.5}  // crew NOT working, cost 5, CLOUDY
+            {0.75, 1.0}, // 0 crew working, cost 2, SUNNY
+            {0.75, 1.0}, // 1 crew working, cost 2, HOT
+            {0.35, 0.5}, // 2 crew working, cost 2, CLOUDY
+            {0.75, 1.0}, // 3 crew working, cost 4, SUNNY
+            {0.75, 1.0}, // 4 crew working, cost 4, HOT
+            {0.35, 0.5}, // 5 crew working, cost 4, CLOUDY
+            {0.75, 1.0}, // 6 crew working, cost 5, SUNNY
+            {0.75, 1.0}, // 7 crew working, cost 5, HOT
+            {0.35, 0.5}, // 8 crew working, cost 5, CLOUDY
+            {0.95, 0.75}, // 9 crew NOT working, cost 2, SUNNY
+            {0.95, 0.75}, // 10 crew NOT working, cost 2, HOT
+            {0.35, 0.5}, // 11 crew NOT working, cost 2, CLOUDY
+            {0.95, 0.75}, // 12 crew NOT working, cost 4, SUNNY
+            {0.95, 0.75}, // 13 crew NOT working, cost 4, HOT
+            {0.35, 0.5}, // 14 crew NOT working, cost 4, CLOUDY
+            {0.95, 0.75}, // 15 crew NOT working, cost 5, SUNNY
+            {0.95, 0.75}, // 16 crew NOT working, cost 5, HOT
+            {0.35, 0.5}  // 17 crew NOT working, cost 5, CLOUDY
     };
 
     private double[] getPercents(PlayerInformation info) {
         int index = 0;
-        if (info.streetCrewWorking) {
+        if (!info.streetCrewWorking) {
             index += strategy.length / 2;
         }
         if (info.costPerGlass == 4) {
