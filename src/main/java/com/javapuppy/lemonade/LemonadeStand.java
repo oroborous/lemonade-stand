@@ -1,10 +1,14 @@
 package com.javapuppy.lemonade;
 
+import com.javapuppy.lemonade.conditions.Conditions;
 import com.javapuppy.lemonade.conditions.DailyConditions;
 import com.javapuppy.lemonade.conditions.StandardGameConditions;
+import com.javapuppy.lemonade.conditions.SunnyNoConstruction;
 import com.javapuppy.lemonade.log.ConsoleLogger;
 import com.javapuppy.lemonade.log.CsvFileLogger;
 import com.javapuppy.lemonade.log.Logger;
+import com.javapuppy.lemonade.strategy.ConservativeStrategy;
+import com.javapuppy.lemonade.strategy.LemonadeStandStrategy;
 
 import java.util.Arrays;
 
@@ -40,18 +44,18 @@ public class LemonadeStand {
         this.consoleEnabled = enabled;
     }
 
-    private void initPlayers() {
+    private void initPlayers(LemonadeStandStrategy strategy) {
         for (int i = 0; i < players.length; i++) {
-            players[i] = new Player(STARTING_ASSETS);
+            players[i] = new Player(STARTING_ASSETS, strategy);
         }
     }
 
-    public void openForBusiness() {
+    public void openForBusiness(LemonadeStandStrategy strategy, Conditions conditions) {
         currentDay = 0;
-        initPlayers();
+        initPlayers(strategy);
 
         do {
-            DailyConditions dailyConditions = startNewDay();
+            DailyConditions dailyConditions = startNewDay(conditions);
 
             for (int i = 0; i < players.length; i++) {
                 Player player = players[i];
@@ -67,9 +71,13 @@ public class LemonadeStand {
         return Arrays.stream(players).anyMatch(p -> p.assets > 0);
     }
 
-    private DailyConditions startNewDay() {
+    private DailyConditions startNewDay(Conditions conditions) {
         currentDay += 1;
-        DailyConditions dailyConditions = new StandardGameConditions(currentDay);
+        DailyConditions dailyConditions;
+        if (conditions == Conditions.SUNNY_NO_CONSTRUCTION)
+            dailyConditions = new SunnyNoConstruction(currentDay);
+        else
+            dailyConditions = new StandardGameConditions(currentDay);
 
         if (consoleEnabled) {
             clog.log("Weather Report for Day " + currentDay + ": " + dailyConditions.getWeather().getDisplay());
@@ -128,7 +136,7 @@ public class LemonadeStand {
         player.adjustAssets(report.profit, report.day);
 
         if (dailyConditions.getDayNum() == 30 || player.assets <= 0) {
-        flog.log(report);
+            flog.log(report);
         }
         if (consoleEnabled)
             clog.log(report);

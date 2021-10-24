@@ -1,6 +1,11 @@
-package com.javapuppy.lemonade;
+package com.javapuppy.lemonade.strategy;
 
-public class LemonadeStandStrategy {
+import com.javapuppy.lemonade.LemonadeStand;
+import com.javapuppy.lemonade.PlayerDecisions;
+import com.javapuppy.lemonade.PlayerInformation;
+import com.javapuppy.lemonade.Weather;
+
+public class ConservativeStrategy implements LemonadeStandStrategy {
 
     // find percents in array by:
     // all streetCrewingWorking = true in first half of array, false in second half
@@ -30,17 +35,17 @@ public class LemonadeStandStrategy {
 
     private double[] getPercents(PlayerInformation info) {
         int index = 0;
-        if (!info.streetCrewWorking) {
+        if (!info.isStreetCrewWorking()) {
             index += strategy.length / 2;
         }
-        if (info.costPerGlass == 4) {
+        if (info.getCostPerGlass() == 4) {
             index += 3;
-        } else if (info.costPerGlass == 5) {
+        } else if (info.getCostPerGlass() == 5) {
             index += 6;
         }
-        if (info.weather == Weather.HOT) {
+        if (info.getWeather() == Weather.HOT) {
             index += 1;
-        } else if (info.weather == Weather.CLOUDY) {
+        } else if (info.getWeather() == Weather.CLOUDY) {
             index += 2;
         }
 
@@ -48,37 +53,36 @@ public class LemonadeStandStrategy {
     }
 
 
-
     public PlayerDecisions getDecisions(int assets, PlayerInformation info) {
         double[] percents = getPercents(info);
         double pReinvest = percents[0];
         double pSpentOnGlasses = percents[1];
         double amtReinvest = assets * pReinvest;
-        double markup = minProfitableMarkup(amtReinvest, info.costPerGlass, pSpentOnGlasses);
+        double markup = minProfitableMarkup(amtReinvest, info.getCostPerGlass(), pSpentOnGlasses);
 
         // Given the dollar amount we want to reinvest in making glasses of lemonade,
         // how many units can we make given the current cost of each glass?
-        int glassesMade = (int) ((amtReinvest * pSpentOnGlasses) / info.costPerGlass);
+        int glassesMade = (int) ((amtReinvest * pSpentOnGlasses) / info.getCostPerGlass());
         // Given the dollar amount we want to reinvest in making advertising signs,
         // how many signs can we make given the cost of each sign?
         int signsMade = (int) ((amtReinvest * (1 - pSpentOnGlasses)) / LemonadeStand.SIGN_COST);
         // Given the desired markup and the current cost per glass, what are we going
         // to charge per glass of lemonade?
-        int pricePerGlass = (int) Math.round((1 + markup) * info.costPerGlass);
+        int pricePerGlass = (int) Math.round((1 + markup) * info.getCostPerGlass());
 
         return new PlayerDecisions(glassesMade, signsMade, pricePerGlass);
 
 //        if (info.weather == Weather.SUNNY || info.weather == Weather.HOT) {
 //            if (info.streetCrewWorking) {
-//                return getDecisions(assets * 0.75, info.costPerGlass, 1.0, 1.0);
+//                return getDecisions(assets * 0.75, info.getCostPerGlass(), 1.0, 1.0);
 //            } else {
-//                return getDecisions(assets * 0.95, info.costPerGlass, 0.75, 0.5);
+//                return getDecisions(assets * 0.95, info.getCostPerGlass(), 0.75, 0.5);
 //            }
 //        } else if (info.weather == Weather.CLOUDY) {
-//            return getDecisions(assets * 0.35, info.costPerGlass, 0.5,
-//                    minProfitableMarkup(assets * 0.35, info.costPerGlass, 0.5));
+//            return getDecisions(assets * 0.35, info.getCostPerGlass(), 0.5,
+//                    minProfitableMarkup(assets * 0.35, info.getCostPerGlass(), 0.5));
 //        } else {
-//            return getDecisions(0, info.costPerGlass, 0, 0);
+//            return getDecisions(0, info.getCostPerGlass(), 0, 0);
 //        }
     }
 

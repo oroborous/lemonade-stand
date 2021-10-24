@@ -1,9 +1,9 @@
 package com.javapuppy.lemonade;
 
 public class PlayerInformation {
-    boolean streetCrewWorking;
-    Weather weather;
-    int costPerGlass;
+    private boolean streetCrewWorking;
+    private Weather weather;
+    private int costPerGlass;
 
     public PlayerInformation(Weather weather,
                              boolean streetCrewWorking,
@@ -11,5 +11,17 @@ public class PlayerInformation {
         this.weather = weather;
         this.streetCrewWorking = streetCrewWorking;
         this.costPerGlass = costPerGlass;
+    }
+
+    public int getCostPerGlass() {
+        return costPerGlass;
+    }
+
+    public boolean isStreetCrewWorking() {
+        return streetCrewWorking;
+    }
+
+    public Weather getWeather() {
+        return weather;
     }
 }

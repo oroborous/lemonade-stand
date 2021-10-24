@@ -1,14 +1,18 @@
 package com.javapuppy.lemonade;
 
+import com.javapuppy.lemonade.strategy.ConservativeStrategy;
+import com.javapuppy.lemonade.strategy.LemonadeStandStrategy;
+
 public class Player {
     private static int nextId = 1;
     int playerId;
     public int assets;
     public int finalDay;
-    LemonadeStandStrategy strategy = new LemonadeStandStrategy();
+    private LemonadeStandStrategy strategy;
 
-    public Player(int assets) {
+    public Player(int assets, LemonadeStandStrategy strategy) {
         this.playerId = nextId++;
+        this.strategy = strategy;
         this.assets = assets;
     }
 
