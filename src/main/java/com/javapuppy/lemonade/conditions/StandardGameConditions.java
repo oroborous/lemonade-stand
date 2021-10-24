@@ -1,16 +1,17 @@
-package com.javapuppy.lemonade;
+package com.javapuppy.lemonade.conditions;
 
-public class DailyConditions {
-    int dayNum;
-    Weather weather;
-    double weatherFactor;
-    boolean streetCrewWorking;
-    boolean streetCrewThirsty;
-    boolean stormBrewing;
-    int costPerGlass;
-    String specialEventText;
+import com.javapuppy.lemonade.PlayerInformation;
+import com.javapuppy.lemonade.Weather;
 
-    public DailyConditions(int dayNum) {
+public class StandardGameConditions implements DailyConditions {
+    private final int dayNum;
+    private final int costPerGlass;
+    private Weather weather;
+    private double weatherFactor;
+    private boolean streetCrewWorking, streetCrewThirsty, stormBrewing;
+    private String specialEventText;
+
+    public StandardGameConditions(int dayNum) {
         this.dayNum = dayNum;
 
         if (dayNum < 3) {
@@ -25,8 +26,48 @@ public class DailyConditions {
         doRandomEvents();
     }
 
+    @Override
+    public int getCostPerGlass() {
+        return costPerGlass;
+    }
+
+    @Override
+    public int getDayNum() {
+        return dayNum;
+    }
+
     public PlayerInformation getPlayerInformation() {
         return new PlayerInformation(weather, streetCrewWorking, costPerGlass);
+    }
+
+    @Override
+    public String getSpecialEventText() {
+        return specialEventText;
+    }
+
+    @Override
+    public double getWeatherFactor() {
+        return weatherFactor;
+    }
+
+    @Override
+    public Weather getWeather() {
+        return weather;
+    }
+
+    @Override
+    public void setWeather(Weather weather) {
+        this.weather = weather;
+    }
+
+    @Override
+    public boolean isStormBrewing() {
+        return stormBrewing;
+    }
+
+    @Override
+    public boolean isStreetCrewThirsty() {
+        return streetCrewThirsty;
     }
 
     private void makeWeather() {
@@ -55,8 +96,8 @@ public class DailyConditions {
     }
 
     private void doRandomEvents() {
-        streetCrewWorking = streetCrewThirsty = false;
-        stormBrewing = false;
+        streetCrewWorking = streetCrewThirsty = stormBrewing = false;
+        specialEventText = "";
 
         if (weather == Weather.CLOUDY) {
             if (Math.random() < 0.25) {

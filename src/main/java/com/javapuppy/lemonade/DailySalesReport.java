@@ -1,5 +1,8 @@
 package com.javapuppy.lemonade;
 
+import com.javapuppy.lemonade.conditions.DailyConditions;
+import com.javapuppy.lemonade.conditions.StandardGameConditions;
+
 import static com.javapuppy.lemonade.LemonadeStand.SIGN_COST;
 
 public class DailySalesReport {
@@ -22,9 +25,9 @@ public class DailySalesReport {
     public DailySalesReport(DailyConditions conditions, Player player,
                             PlayerDecisions decisions) {
         this.playerNum = player.playerId;
-        this.day = conditions.dayNum;
-        this.weather = conditions.weather;
-        this.costPerGlass = conditions.costPerGlass;
+        this.day = conditions.getDayNum();
+        this.weather = conditions.getWeather();
+        this.costPerGlass = conditions.getCostPerGlass();
 
         this.startingAssets = player.assets;
         this.glassesMade = decisions.glassesMade;

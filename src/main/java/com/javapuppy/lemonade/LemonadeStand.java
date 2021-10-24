@@ -1,5 +1,7 @@
 package com.javapuppy.lemonade;
 
+import com.javapuppy.lemonade.conditions.DailyConditions;
+import com.javapuppy.lemonade.conditions.StandardGameConditions;
 import com.javapuppy.lemonade.log.ConsoleLogger;
 import com.javapuppy.lemonade.log.CsvFileLogger;
 import com.javapuppy.lemonade.log.Logger;
@@ -67,14 +69,14 @@ public class LemonadeStand {
 
     private DailyConditions startNewDay() {
         currentDay += 1;
-        DailyConditions dailyConditions = new DailyConditions(currentDay);
+        DailyConditions dailyConditions = new StandardGameConditions(currentDay);
 
         if (consoleEnabled) {
-            clog.log("Weather Report for Day " + currentDay + ": " + dailyConditions.weather.getDisplay());
-            clog.log("On day " + currentDay + ", the cost of lemonade is: " + dailyConditions.costPerGlass);
+            clog.log("Weather Report for Day " + currentDay + ": " + dailyConditions.getWeather().getDisplay());
+            clog.log("On day " + currentDay + ", the cost of lemonade is: " + dailyConditions.getCostPerGlass());
 
-            if (dailyConditions.specialEventText != null) {
-                clog.log(dailyConditions.specialEventText);
+            if (dailyConditions.getSpecialEventText() != null) {
+                clog.log(dailyConditions.getSpecialEventText());
             }
         }
 
@@ -102,18 +104,19 @@ public class LemonadeStand {
 
         // increase in sales due to ads
         double adBenefit = 1 - Math.exp(w) * C2;
-        double n2 = Math.floor(dailyConditions.weatherFactor * n1 * (1 + adBenefit));
+        double n2 = Math.floor(dailyConditions.getWeatherFactor() * n1 * (1 + adBenefit));
 
         DailySalesReport report = new DailySalesReport(dailyConditions,
                 player, playerDecisions);
 
-        if (dailyConditions.stormBrewing) {
-            report.weather = dailyConditions.weather = Weather.STORM;
+        if (dailyConditions.isStormBrewing()) {
+            report.weather = Weather.STORM;
+            dailyConditions.setWeather(Weather.STORM);
             n2 = 0;
             if (glasses > 0) {
                 report.specialResultText = "All lemonade was ruined";
             }
-        } else if (dailyConditions.streetCrewThirsty) {
+        } else if (dailyConditions.isStreetCrewThirsty()) {
             n2 = glasses;
             report.specialResultText = "The street crews bought all your lemonade at lunchtime!";
         }
@@ -124,7 +127,7 @@ public class LemonadeStand {
         // adjust assets
         player.adjustAssets(report.profit, report.day);
 
-        if (dailyConditions.dayNum == 30 || player.assets <= 0) {
+        if (dailyConditions.getDayNum() == 30 || player.assets <= 0) {
         flog.log(report);
         }
         if (consoleEnabled)
