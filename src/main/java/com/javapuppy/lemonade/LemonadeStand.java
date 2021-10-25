@@ -76,6 +76,8 @@ public class LemonadeStand {
             dailyConditions = new SunnyNoConstruction(currentDay);
         else if (conditions == Conditions.HOT)
             dailyConditions = new Hot(currentDay);
+        else if (conditions == Conditions.CLOUDY_30_PERC)
+            dailyConditions = new Cloudy(currentDay, 30);
         else
             dailyConditions = new StandardGameConditions(currentDay);
 
