@@ -1,5 +1,6 @@
 package com.javapuppy.lemonade.conditions;
 
+import com.javapuppy.lemonade.PlayerInformation;
 import com.javapuppy.lemonade.Weather;
 
 public abstract class CostPerGlassRises implements DailyConditions {
@@ -17,6 +18,11 @@ public abstract class CostPerGlassRises implements DailyConditions {
         } else {
             costPerGlass = 5;
         }
+    }
+
+    @Override
+    public PlayerInformation getPlayerInformation() {
+        return new PlayerInformation(getWeather(), isStreetCrewWorking(), getCostPerGlass());
     }
 
     @Override

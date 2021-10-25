@@ -1,13 +1,9 @@
 package com.javapuppy.lemonade;
 
-import com.javapuppy.lemonade.conditions.Conditions;
-import com.javapuppy.lemonade.conditions.DailyConditions;
-import com.javapuppy.lemonade.conditions.StandardGameConditions;
-import com.javapuppy.lemonade.conditions.SunnyNoConstruction;
+import com.javapuppy.lemonade.conditions.*;
 import com.javapuppy.lemonade.log.ConsoleLogger;
 import com.javapuppy.lemonade.log.CsvFileLogger;
 import com.javapuppy.lemonade.log.Logger;
-import com.javapuppy.lemonade.strategy.ConservativeStrategy;
 import com.javapuppy.lemonade.strategy.LemonadeStandStrategy;
 
 import java.util.Arrays;
@@ -15,25 +11,27 @@ import java.util.Arrays;
 public class LemonadeStand {
     // all amounts are in pennies
     public static final int SIGN_COST = 15;
-    final int STARTING_ASSETS = 200;
-    final double P9 = 10;
-    final double S2 = 30;
-    final double C9 = 0.5;
-    final double C2 = 1;
+    final int STARTING_ASSETS;
+    private final int MAX_DAYS;
+    private final Player[] players;
+
+    private final double P9 = 10;
+    private final double S2 = 30;
+    private final double C9 = 0.5;
+    private final double C2 = 1;
 
     private int currentDay = 0;
-    private int maxDays = -1;
 
-    private Player[] players;
 
     // Runs faster when console output disabled
     private boolean consoleEnabled = false;
     private Logger clog = new ConsoleLogger();
     private Logger flog = new CsvFileLogger();
 
-    public LemonadeStand(int numPlayers, int maxDays) {
-        this.maxDays = maxDays;
+    public LemonadeStand(int numPlayers, int maxDays, int startingAssets) {
+        this.MAX_DAYS = maxDays;
         this.players = new Player[numPlayers];
+        this.STARTING_ASSETS = startingAssets;
     }
 
     public void close() {
@@ -64,7 +62,7 @@ public class LemonadeStand {
 
                 calculateResults(dailyConditions, player, playerDecisions);
             }
-        } while (anyPlayersSolvent() && (currentDay < maxDays || maxDays == -1));
+        } while (anyPlayersSolvent() && (currentDay < MAX_DAYS || MAX_DAYS == -1));
     }
 
     private boolean anyPlayersSolvent() {
@@ -76,6 +74,8 @@ public class LemonadeStand {
         DailyConditions dailyConditions;
         if (conditions == Conditions.SUNNY_NO_CONSTRUCTION)
             dailyConditions = new SunnyNoConstruction(currentDay);
+        else if (conditions == Conditions.HOT)
+            dailyConditions = new Hot(currentDay);
         else
             dailyConditions = new StandardGameConditions(currentDay);
 
@@ -135,9 +135,9 @@ public class LemonadeStand {
         // adjust assets
         player.adjustAssets(report.profit, report.day);
 
-        if (dailyConditions.getDayNum() == 30 || player.assets <= 0) {
+//        if (dailyConditions.getDayNum() == 30 || player.assets <= 0) {
             flog.log(report);
-        }
+//        }
         if (consoleEnabled)
             clog.log(report);
     }

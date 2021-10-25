@@ -2,22 +2,20 @@ package com.javapuppy.lemonade.conditions;
 
 import com.javapuppy.lemonade.Weather;
 
-public class SunnyNoConstruction extends CostPerGlassRises {
-
-    public SunnyNoConstruction(int dayNum) {
+public class Hot extends CostPerGlassRises{
+    public Hot(int dayNum) {
         super(dayNum);
-        setWeather(Weather.SUNNY);
+        setWeather(Weather.HOT);
     }
-
 
     @Override
     public String getSpecialEventText() {
-        return "Always sunny, no construction";
+        return "Always hot, no construction";
     }
 
     @Override
     public double getWeatherFactor() {
-        return 1.0;
+        return 2.0;
     }
 
     @Override

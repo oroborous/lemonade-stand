@@ -15,12 +15,6 @@ public class StandardGameConditions extends CostPerGlassRises {
         doRandomEvents();
     }
 
-
-    @Override
-    public PlayerInformation getPlayerInformation() {
-        return new PlayerInformation(getWeather(), streetCrewWorking, getCostPerGlass());
-    }
-
     @Override
     public String getSpecialEventText() {
         return specialEventText;
@@ -39,6 +33,11 @@ public class StandardGameConditions extends CostPerGlassRises {
     @Override
     public boolean isStreetCrewThirsty() {
         return streetCrewThirsty;
+    }
+
+    @Override
+    public boolean isStreetCrewWorking() {
+        return streetCrewWorking;
     }
 
     private void makeWeather() {

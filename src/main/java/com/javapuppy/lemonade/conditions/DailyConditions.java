@@ -20,5 +20,7 @@ public interface DailyConditions {
 
     boolean isStreetCrewThirsty();
 
+    boolean isStreetCrewWorking();
+
     void setWeather(Weather weather);
 }

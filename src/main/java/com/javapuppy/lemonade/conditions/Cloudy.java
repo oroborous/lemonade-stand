@@ -1,23 +1,25 @@
 package com.javapuppy.lemonade.conditions;
 
+import com.javapuppy.lemonade.PlayerInformation;
 import com.javapuppy.lemonade.Weather;
 
-public class SunnyNoConstruction extends CostPerGlassRises {
+public class Cloudy extends CostPerGlassRises {
+    private double chanceOfRain;
 
-    public SunnyNoConstruction(int dayNum) {
+    public Cloudy(int dayNum, double chanceOfRain) {
         super(dayNum);
-        setWeather(Weather.SUNNY);
+        this.chanceOfRain = chanceOfRain;
+        setWeather(Weather.CLOUDY);
     }
-
 
     @Override
     public String getSpecialEventText() {
-        return "Always sunny, no construction";
+        return "Always cloudy with 30% chance of rain, no construction";
     }
 
     @Override
     public double getWeatherFactor() {
-        return 1.0;
+        return  1.0 - chanceOfRain / 100;
     }
 
     @Override
