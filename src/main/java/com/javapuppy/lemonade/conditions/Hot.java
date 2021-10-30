@@ -19,6 +19,11 @@ public class Hot extends CostPerGlassRises{
     }
 
     @Override
+    public double getChanceOfRain() {
+        return 0;
+    }
+
+    @Override
     public boolean isStormBrewing() {
         return false;
     }

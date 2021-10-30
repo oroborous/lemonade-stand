@@ -4,7 +4,7 @@ import com.javapuppy.lemonade.PlayerInformation;
 import com.javapuppy.lemonade.Weather;
 
 public class StandardGameConditions extends CostPerGlassRises {
-    private double weatherFactor;
+    private double weatherFactor, chanceOfRain;
     private boolean streetCrewWorking, streetCrewThirsty, stormBrewing;
     private String specialEventText;
 
@@ -23,6 +23,11 @@ public class StandardGameConditions extends CostPerGlassRises {
     @Override
     public double getWeatherFactor() {
         return weatherFactor;
+    }
+
+    @Override
+    public double getChanceOfRain() {
+        return chanceOfRain;
     }
 
     @Override
@@ -55,7 +60,7 @@ public class StandardGameConditions extends CostPerGlassRises {
         }
 
         if (getWeather() == Weather.CLOUDY) {
-            double chanceOfRain = 30 + Math.floor(Math.random() * 5) * 10;
+            chanceOfRain = 30 + Math.floor(Math.random() * 5) * 10;
             weatherFactor = 1.0 - chanceOfRain / 100;
         } else if (getWeather() == Weather.HOT) {
             weatherFactor = 2.0;

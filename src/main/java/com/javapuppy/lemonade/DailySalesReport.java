@@ -9,6 +9,8 @@ public class DailySalesReport {
     public int playerNum;
     public int day;
     public Weather weather;
+    public double chanceOfRain;
+    public boolean streetCrewWorking;
     public int startingAssets;
     public int costPerGlass;
     public int glassesSold;
@@ -28,6 +30,8 @@ public class DailySalesReport {
         this.day = conditions.getDayNum();
         this.weather = conditions.getWeather();
         this.costPerGlass = conditions.getCostPerGlass();
+        this.chanceOfRain = conditions.getChanceOfRain();
+        this.streetCrewWorking = conditions.isStreetCrewWorking();
 
         this.startingAssets = player.assets;
         this.glassesMade = decisions.glassesMade;

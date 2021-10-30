@@ -14,6 +14,8 @@ public interface DailyConditions {
 
     double getWeatherFactor();
 
+    double getChanceOfRain();
+
     Weather getWeather();
 
     boolean isStormBrewing();

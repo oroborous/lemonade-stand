@@ -1,7 +1,6 @@
 package com.javapuppy.lemonade;
 
 import com.javapuppy.lemonade.conditions.Conditions;
-import com.javapuppy.lemonade.strategy.FiftyGlassesNoSigns;
 import com.javapuppy.lemonade.strategy.ParetoConditions;
 
 

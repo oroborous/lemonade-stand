@@ -25,6 +25,8 @@ public class CsvFileLogger implements Logger {
             StringBuilder sb = new StringBuilder();
             sb.append("Day").append(",");
             sb.append("Weather").append(",");
+            sb.append("Chance of Rain").append(",");
+            sb.append("Street Crew?").append(",");
             sb.append("Stand").append(",");
             sb.append("Starting Assets").append(",");
             sb.append("Glasses Sold").append(",");
@@ -48,6 +50,8 @@ public class CsvFileLogger implements Logger {
         StringBuilder sb = new StringBuilder();
         sb.append(report.day).append(",");
         sb.append(report.weather.getDisplay()).append(",");
+        sb.append(String.format("%f%", report.chanceOfRain)).append(",");
+        sb.append(report.streetCrewWorking ? "Y" : "N").append(",");
         sb.append(report.playerNum).append(",");
         sb.append(report.startingAssets).append(",");
         sb.append(report.glassesSold).append(",");

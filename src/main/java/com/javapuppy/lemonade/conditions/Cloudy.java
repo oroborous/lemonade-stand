@@ -1,6 +1,5 @@
 package com.javapuppy.lemonade.conditions;
 
-import com.javapuppy.lemonade.PlayerInformation;
 import com.javapuppy.lemonade.Weather;
 
 public class Cloudy extends CostPerGlassRises {
@@ -20,6 +19,11 @@ public class Cloudy extends CostPerGlassRises {
     @Override
     public double getWeatherFactor() {
         return  1.0 - chanceOfRain / 100;
+    }
+
+    @Override
+    public double getChanceOfRain() {
+        return chanceOfRain;
     }
 
     @Override

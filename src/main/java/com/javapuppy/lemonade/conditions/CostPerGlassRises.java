@@ -7,6 +7,7 @@ public abstract class CostPerGlassRises implements DailyConditions {
     private final int dayNum;
     private final int costPerGlass;
     private Weather weather;
+    private double chanceOfRain;
 
     public CostPerGlassRises(int dayNum) {
         this.dayNum = dayNum;
