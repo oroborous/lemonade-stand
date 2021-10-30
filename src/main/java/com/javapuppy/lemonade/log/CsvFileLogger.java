@@ -6,6 +6,7 @@ import com.javapuppy.lemonade.LemonadeStand;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.NumberFormat;
 
 public class CsvFileLogger implements Logger {
     @Override
@@ -50,7 +51,7 @@ public class CsvFileLogger implements Logger {
         StringBuilder sb = new StringBuilder();
         sb.append(report.day).append(",");
         sb.append(report.weather.getDisplay()).append(",");
-        sb.append(String.format("%f%", report.chanceOfRain)).append(",");
+        sb.append(Math.round(report.chanceOfRain) + "%").append(",");
         sb.append(report.streetCrewWorking ? "Y" : "N").append(",");
         sb.append(report.playerNum).append(",");
         sb.append(report.startingAssets).append(",");
