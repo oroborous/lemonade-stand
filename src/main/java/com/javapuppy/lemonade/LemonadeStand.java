@@ -60,7 +60,9 @@ public class LemonadeStand {
     private DailyConditions startNewDay(Conditions conditions) {
         currentDay += 1;
         DailyConditions dailyConditions;
-        if (conditions == Conditions.SUNNY_NO_CONSTRUCTION)
+        if (conditions == Conditions.SUNNY_POSSIBLE_CONSTRUCTION)
+            dailyConditions = new SunnyPossibleConstruction(currentDay);
+        else if (conditions == Conditions.SUNNY_NO_CONSTRUCTION)
             dailyConditions = new SunnyNoConstruction(currentDay);
         else if (conditions == Conditions.HOT)
             dailyConditions = new Hot(currentDay);
@@ -102,6 +104,10 @@ public class LemonadeStand {
 
         // increase in sales due to ads
         double adBenefit = 1 - Math.exp(w) * C2;
+        // 3 signs = 1.77
+        // 2 signs = 1.63
+        // 1 sign = 1.39
+
         double n2 = Math.floor(dailyConditions.getWeatherFactor() * n1 * (1 + adBenefit));
 
         DailySalesReport report = new DailySalesReport(dailyConditions,
