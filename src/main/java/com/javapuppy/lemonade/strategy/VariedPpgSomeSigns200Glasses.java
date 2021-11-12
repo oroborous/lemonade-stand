@@ -13,7 +13,7 @@ public class VariedPpgSomeSigns200Glasses implements LemonadeStandStrategy {
     public PlayerDecisions getDecisions(int assets, PlayerInformation info) {
         int ppg = (int) random.nextInt(15) + 6;
         int signs = (int) random.nextInt(4);
-        int glassesMade = 100;
+        int glassesMade = 200;
         return new PlayerDecisions(glassesMade, signs, ppg);
     }
 }

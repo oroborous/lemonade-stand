@@ -23,7 +23,7 @@ public abstract class CostPerGlassRises implements DailyConditions {
 
     @Override
     public PlayerInformation getPlayerInformation() {
-        return new PlayerInformation(getWeather(), isStreetCrewWorking(), getCostPerGlass());
+        return new PlayerInformation(dayNum, getWeather(), isStreetCrewWorking(), getCostPerGlass());
     }
 
     @Override

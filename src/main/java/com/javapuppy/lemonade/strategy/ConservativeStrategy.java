@@ -101,9 +101,11 @@ public class ConservativeStrategy implements LemonadeStandStrategy {
         double markup = 0.0;
         // Continue increasing markup by 5% until selling all
         // glasses will at least break even
-        while ((1 + markup) * costPerGlass * glassesMade < totalCost) {
+        int pricePerGlass = 0;
+        do {
             markup += 0.05;
-        }
+            pricePerGlass = (int)Math.round((1 + markup) * costPerGlass);
+        } while (pricePerGlass * glassesMade < totalCost || pricePerGlass <= costPerGlass);
 
         return markup;
     }
